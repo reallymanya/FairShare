@@ -46,7 +46,7 @@ app.use('/api/import', require('./routes/import'));
 app.use('/api/balances', require('./routes/balances'));
 
 app.use(express.static(path.join(__dirname, 'public')));
-app.get('*', (req, res) => {
+app.use((req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
