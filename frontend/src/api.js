@@ -1,4 +1,4 @@
-export const API_URL = import.meta.env.PROD ? '/api' : 'http://localhost:3000/api';
+export const API_URL = import.meta.env.VITE_API_URL || (import.meta.env.PROD ? '/api' : 'http://localhost:3000/api');
 
 export const apiFetch = async (endpoint, options = {}) => {
   const userId = localStorage.getItem('userId');
