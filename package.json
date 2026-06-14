@@ -7,7 +7,7 @@
   },
   "scripts": {
     "install-all": "cd backend && npm install && cd ../frontend && npm install",
-    "build": "npm run install-all && cd frontend && npm run build && rm -rf ../backend/public && cp -r dist ../backend/public",
+    "build": "npm run install-all && cd frontend && npm run build && rm -rf ../backend/public && cp -r dist ../backend/public && cd ../backend && npx prisma generate && npx prisma db push --accept-data-loss",
     "start": "cd backend && npm start"
   }
 }
