@@ -1,0 +1,101 @@
+datasource db {
+  provider = "sqlite"
+  url      = "file:./dev.db"
+}
+
+generator client {
+  provider = "prisma-client-js"
+  engineType = "binary"
+}
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String   @unique
+  isActive  Boolean  @default(true)
+  
+  groupMemberships GroupMember[]
+  expensesPaid    Expense[]      @relation("PaidExpenses")
+  expenseSplits   ExpenseSplit[]
+  settlementsPaid Settlement[]     @relation("SettlementsPaid")
+  settlementsRcvd Settlement[]     @relation("SettlementsReceived")
+}
+
+model Group {
+  id          Int      @id @default(autoincrement())
+  name        String
+  description String?
+  createdAt   DateTime @default(now())
+
+  members     GroupMember[]
+  expenses    Expense[]
+  settlements Settlement[]
+  anomalies   AnomalyLog[]
+}
+
+model GroupMember {
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  userId    Int
+  joinedAt  DateTime @default(now())
+  leftAt    DateTime?
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  user  User  @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@unique([groupId, userId])
+}
+
+model Expense {
+  id             Int      @id @default(autoincrement())
+  groupId        Int
+  date           DateTime
+  description    String
+  paidById       Int
+  amountOriginal Float
+  currency       String
+  amountINR      Float
+  splitType      String?
+  notes          String?
+  status         String   @default("IMPORTED") // IMPORTED, NEEDS_REVIEW, APPROVED
+  createdAt      DateTime @default(now())
+
+  group  Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  paidBy User @relation("PaidExpenses", fields: [paidById], references: [id])
+  splits ExpenseSplit[]
+}
+
+model ExpenseSplit {
+  id         Int   @id @default(autoincrement())
+  expenseId  Int
+  userId     Int
+  amountOwed Float
+
+  expense Expense @relation(fields: [expenseId], references: [id], onDelete: Cascade)
+  user    User    @relation(fields: [userId], references: [id])
+}
+
+model Settlement {
+  id        Int      @id @default(autoincrement())
+  groupId   Int
+  date      DateTime
+  payerId   Int
+  payeeId   Int
+  amountINR Float
+  createdAt DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  payer User @relation("SettlementsPaid", fields: [payerId], references: [id])
+  payee User @relation("SettlementsReceived", fields: [payeeId], references: [id])
+}
+
+model AnomalyLog {
+  id          Int      @id @default(autoincrement())
+  groupId     Int
+  rowNum      Int
+  issueType   String
+  description String
+  actionTaken String
+  createdAt   DateTime @default(now())
+
+  group Group @relation(fields: [groupId], references: [id], onDelete: Cascade)
+}
