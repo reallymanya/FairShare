@@ -1,0 +1,13 @@
+{
+  "name": "fairshare",
+  "version": "1.0.0",
+  "private": true,
+  "engines": {
+    "node": ">=18"
+  },
+  "scripts": {
+    "install-all": "cd backend && npm install && cd ../frontend && npm install",
+    "build": "npm run install-all && cd frontend && npm run build && rm -rf ../backend/public && cp -r dist ../backend/public",
+    "start": "cd backend && npm start"
+  }
+}

@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useParams } from 'react-router-dom';
 import Navbar from '../components/Navbar';
+import { API_URL } from '../api';
 
 export default function DataImport() {
   const [file, setFile] = useState(null);
@@ -17,7 +18,7 @@ export default function DataImport() {
     formData.append('file', file);
 
     try {
-      const res = await fetch(`http://localhost:3000/api/import/${groupId}`, {
+      const res = await fetch(`${API_URL}/import/${groupId}`, {
         method: 'POST',
         body: formData
       });

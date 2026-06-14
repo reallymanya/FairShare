@@ -1,5 +1,6 @@
 const express = require('express');
 const cors = require('cors');
+const path = require('path');
 const { PrismaClient } = require('@prisma/client');
 
 const app = express();
@@ -43,6 +44,11 @@ app.use('/api/auth', require('./routes/auth'));
 app.use('/api/groups', require('./routes/groups'));
 app.use('/api/import', require('./routes/import'));
 app.use('/api/balances', require('./routes/balances'));
+
+app.use(express.static(path.join(__dirname, 'public')));
+app.get('*', (req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'index.html'));
+});
 
 app.listen(PORT, () => {
   console.log(`Server running on port ${PORT}`);
